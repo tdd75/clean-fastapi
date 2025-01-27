@@ -1,0 +1,72 @@
+services:
+  fastapi: &fastapi
+    profiles: [ "prod" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - JWT_SECRET=very-secure-secret
+      - DB_URL=postgresql+psycopg://postgres:password@postgres:5432/db_dev
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - SMTP_USER=tranducduy7544@gmail.com
+      - SMTP_PASSWORD=Xtqhaeiqediagkmo
+    command:
+      - bash
+      - -c
+      - |
+        make translations-compile
+        make db-upgrade
+        make prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  celeryworker:
+    <<: *fastapi
+    ports: [ ]
+    command: uv run celery -A app worker -l INFO --uid=nobody --gid=nogroup
+
+  celerybeat:
+    <<: *fastapi
+    ports: [ ]
+    command: uv run celery -A app beat -l INFO --uid=nobody --gid=nogroup -s /tmp/celerybeat-schedule
+
+  flower:
+    <<: *fastapi
+    ports:
+      - '5555:5555'
+    command: uv run celery -A app flower --basic_auth=admin:password
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=db_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}' ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
+
+  nginx:
+    profiles: [ "prod" ]
+    image: nginx:stable
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    ports:
+      - '8000:8000'
+    depends_on:
+      - fastapi

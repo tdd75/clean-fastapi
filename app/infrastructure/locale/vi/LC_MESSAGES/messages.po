@@ -1,0 +1,33 @@
+# Vietnamese translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-09-14 17:58+0700\n"
+"PO-Revision-Date: 2025-09-14 17:49+0700\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: vi\n"
+"Language-Team: vi <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/application/service/user_service.py:13
+#: app/application/use_case/auth/login_use_case.py:19
+#, python-brace-format
+msgid "User ({user_id}) not found"
+msgstr "Không tìm được người dùng ({user_id})"
+
+#: app/application/service/user_service.py:20
+msgid "Email already exists"
+msgstr "Email đã tồn tại"
+
+#: app/application/use_case/auth/login_use_case.py:15
+msgid "Invalid credentials"
+msgstr "Thông tin đăng nhập không chính xác"

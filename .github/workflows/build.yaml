@@ -1,0 +1,37 @@
+name: clean-fastapi
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: "secret"
+      DB_URL: "sqlite:///:memory:"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Format and lint
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
+
+      - name: Compile translations
+        run: make translations-compile
+
+      - name: Run tests
+        run: make test-cov
